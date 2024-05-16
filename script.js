@@ -164,73 +164,87 @@ class AVLTree {
 
     deleteNode(root, key) {
         if (root == null) return root;
-
+    
+        // Busca el nodo a eliminar
         if (key < root.key) {
+            this.uiUpdater.logOperation(`Deleting ${key} < ${root.key}: Going left.`);
             root.left = this.deleteNode(root.left, key);
         } else if (key > root.key) {
+            this.uiUpdater.logOperation(`Deleting ${key} > ${root.key}: Going right.`);
             root.right = this.deleteNode(root.right, key);
         } else {
+            // Nodo encontrado, procedemos a eliminarlo
+            this.uiUpdater.logOperation(`Deleting node ${key}.`);
             if ((root.left == null) || (root.right == null)) {
                 let temp = root.left ? root.left : root.right;
-
                 if (temp == null) {
+                    // Caso: sin hijos
                     temp = root;
                     root = null;
                 } else {
+                    // Caso: un solo hijo
                     root = temp;
                 }
             } else {
+                // Caso: dos hijos, encuentra el sucesor
                 let temp = this.getMinValueNode(root.right);
                 root.key = temp.key;
                 root.right = this.deleteNode(root.right, temp.key);
             }
         }
-
+    
         if (root == null) return root;
-
+    
+        // Actualiza la altura del nodo actual
         root.height = 1 + Math.max(this.height(root.left), this.height(root.right));
+    
+        // Obtiene el balance del nodo actual
         const balance = this.getBalance(root);
-
-        if (balance > 1 && this.getBalance(root.left) >= 0) {
-            this.uiUpdater.logOperation(`Delete ${key}: Left Rotation at node ${root.key}`);
-            return this.rightRotate(root);
+    
+        // Caso: Desbalanceado a la izquierda
+        if (balance > 1) {
+            if (this.getBalance(root.left) >= 0) {
+                this.uiUpdater.logOperation(`Delete ${key}: Left Rotation at node ${root.key}`);
+                return this.rightRotate(root);
+            } else {
+                root.left = this.leftRotate(root.left);
+                this.uiUpdater.incrementLeftRightRotations();
+                this.uiUpdater.logOperation(`Delete ${key}: Left-Right Rotation at node ${root.key}`);
+                return this.rightRotate(root);
+            }
         }
-
-        if (balance > 1 && this.getBalance(root.left) < 0) {
-            root.left = this.leftRotate(root.left);
-            this.uiUpdater.incrementLeftRightRotations();
-            this.uiUpdater.logOperation(`Delete ${key}: Left-Right Rotation at node ${root.key}`);
-            return this.rightRotate(root);
+    
+        // Caso: Desbalanceado a la derecha
+        if (balance < -1) {
+            if (this.getBalance(root.right) <= 0) {
+                this.uiUpdater.logOperation(`Delete ${key}: Right Rotation at node ${root.key}`);
+                return this.leftRotate(root);
+            } else {
+                root.right = this.rightRotate(root.right);
+                this.uiUpdater.incrementRightLeftRotations();
+                this.uiUpdater.logOperation(`Delete ${key}: Right-Left Rotation at node ${root.key}`);
+                return this.leftRotate(root);
+            }
         }
-
-        if (balance < -1 && this.getBalance(root.right) <= 0) {
-            this.uiUpdater.logOperation(`Delete ${key}: Right Rotation at node ${root.key}`);
-            return this.leftRotate(root);
-        }
-
-        if (balance < -1 && this.getBalance(root.right) > 0) {
-            root.right = this.rightRotate(root.right);
-            this.uiUpdater.incrementRightLeftRotations();
-            this.uiUpdater.logOperation(`Delete ${key}: Right-Left Rotation at node ${root.key}`);
-            return this.leftRotate(root);
-        }
-
+    
+        this.updateNodeDepthAndBalance(root);
         return root;
     }
-
+    
+    
     getMinValueNode(node) {
         let current = node;
         while (current.left != null) current = current.left;
         return current;
     }
-
+    
     removeNode(key) {
         this.root = this.deleteNode(this.root, key);
         this.uiUpdater.logOperation(`Node ${key} removed`);
         renderTree();
         printTraversals();
     }
-
+    
     printPreOrder(node = this.root, logger = console.log) {
         if (node) {
             logger(node.key);
