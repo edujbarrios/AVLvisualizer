@@ -20,13 +20,11 @@ class UIUpdater {
     incrementLeftRotations() {
         this.leftRotations++;
         this.updateRotationCount();
-        this.logOperation("Left Rotation performed");
     }
 
     incrementRightRotations() {
         this.rightRotations++;
         this.updateRotationCount();
-        this.logOperation("Right Rotation performed");
     }
 
     decrementLeftRightRotation() {
@@ -38,14 +36,12 @@ class UIUpdater {
         this.leftRightRotations++;
         this.decrementLeftRightRotation();
         this.updateRotationCount();
-        this.logOperation("Left-Right Rotation performed");
     }
 
     incrementRightLeftRotations() {
         this.rightLeftRotations++;
         this.decrementLeftRightRotation();
         this.updateRotationCount();
-        this.logOperation("Right-Left Rotation performed");
     }
 
     updateRotationCount() {
@@ -132,12 +128,12 @@ class AVLTree {
         const balance = this.getBalance(node);
 
         if (balance > 1 && key < node.left.key) {
-            this.uiUpdater.logOperation(`Insert ${key}: Right Rotation at node ${node.key}`);
+            this.uiUpdater.logOperation(`Insert ${key}: Left Rotation at node ${node.key}`);
             return this.rightRotate(node);
         }
 
         if (balance < -1 && key > node.right.key) {
-            this.uiUpdater.logOperation(`Insert ${key}: Left Rotation at node ${node.key}`);
+            this.uiUpdater.logOperation(`Insert ${key}: Right Rotation at node ${node.key}`);
             return this.leftRotate(node);
         }
 
@@ -196,7 +192,7 @@ class AVLTree {
         const balance = this.getBalance(root);
 
         if (balance > 1 && this.getBalance(root.left) >= 0) {
-            this.uiUpdater.logOperation(`Delete ${key}: Right Rotation at node ${root.key}`);
+            this.uiUpdater.logOperation(`Delete ${key}: Left Rotation at node ${root.key}`);
             return this.rightRotate(root);
         }
 
@@ -208,7 +204,7 @@ class AVLTree {
         }
 
         if (balance < -1 && this.getBalance(root.right) <= 0) {
-            this.uiUpdater.logOperation(`Delete ${key}: Left Rotation at node ${root.key}`);
+            this.uiUpdater.logOperation(`Delete ${key}: Right Rotation at node ${root.key}`);
             return this.leftRotate(root);
         }
 
