@@ -28,8 +28,9 @@ class UIUpdater {
         this.updateRotationCount();
         this.logOperation("Right Rotation performed");
     }
-    decrementLeftRightRotation(){
-        this.leftRotations --;
+
+    decrementLeftRightRotation() {
+        this.leftRotations--;
         this.rightRotations--;
     }
 
@@ -42,7 +43,7 @@ class UIUpdater {
 
     incrementRightLeftRotations() {
         this.rightLeftRotations++;
-        this.decrementLeftRightRotation()
+        this.decrementLeftRightRotation();
         this.updateRotationCount();
         this.logOperation("Right-Left Rotation performed");
     }
@@ -113,10 +114,15 @@ class AVLTree {
     }
 
     insert(node, key) {
-        if (!node) return new AVLNode(key);
+        if (!node) {
+            this.uiUpdater.logOperation(`Inserting ${key} as a new node.`);
+            return new AVLNode(key);
+        }
         if (key < node.key) {
+            this.uiUpdater.logOperation(`Inserting ${key} < ${node.key}: Going left.`);
             node.left = this.insert(node.left, key);
         } else if (key > node.key) {
+            this.uiUpdater.logOperation(`Inserting ${key} > ${node.key}: Going right.`);
             node.right = this.insert(node.right, key);
         } else {
             return node;
@@ -270,9 +276,7 @@ class AVLTree {
         const rightComplexity = this.getComplexity(node.right);
         return leftComplexity + rightComplexity + 1;
     }
-
 }
-
 
 let uiUpdater = new UIUpdater();
 let tree = new AVLTree(uiUpdater);
@@ -293,7 +297,7 @@ function addValues() {
 
         valueInput.value = '';
         renderTree();
-        printTraversals()
+        printTraversals();
 
     } else {
         alert('Please enter a valid number or list of numbers, separated by commas or spaces.');
@@ -455,7 +459,7 @@ function renderTree() {
             .attr('d', d => diagonal(d, d.parent))
             .attr("fill", "none")
             .style('stroke', 'lightsteelblue')
-            .attr("stroke-width", 2)
+            .attr("stroke-width", 2);
 
         link.exit().transition()
             .duration(duration)
@@ -493,8 +497,9 @@ function renderTree() {
         console.log('_Children after:', d._children);
         update(d);
     }
-    update(rootHierarchy)
+    update(rootHierarchy);
 }
+
 function updateDimensions() {
     const margin = {top: 20, right: 20, bottom: 20, left: 20},
         width = window.innerWidth - margin.right - margin.left - 40,
@@ -505,6 +510,7 @@ function updateDimensions() {
 }
 
 window.onresize = updateDimensions;
+
 function updateTreeStats() {
     const treeDepth = tree.getDepth();
     const treeComplexity = tree.getComplexity();
@@ -512,6 +518,7 @@ function updateTreeStats() {
     document.getElementById('tree-depth').textContent = treeDepth;
     document.getElementById('tree-complexity').textContent = treeComplexity;
 }
+
 function printTraversals() {
     let preOrderResult = [];
     let inOrderResult = [];
@@ -528,6 +535,7 @@ function updateTraversalResults(preOrder, inOrder, postOrder) {
     const resultBox = document.getElementById('resultBox');
     resultBox.value = `Pre-order: ${preOrder}\nIn-order: ${inOrder.join(' ')}\nPost-order: ${postOrder.join(' ')}`;
 }
+
 function resetTree() {
     tree = new AVLTree(uiUpdater);
     uiUpdater = new UIUpdater();
@@ -537,7 +545,6 @@ function resetTree() {
     document.getElementById('log-container').innerHTML = '';
 
     d3.select("#tree-container").select("svg").remove();
-
 
     localStorage.removeItem('operations');
 }
@@ -558,6 +565,7 @@ function executeSavedOperations() {
         renderTree();
     }
 }
+
 window.addEventListener('resize', renderTree);
 window.onload = function() {
     uiUpdater = new UIUpdater();
