@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AVL Tree Explorer: Visualize and Examine Balanced Binary Trees</title>
     <meta name="description" content="Explore AVL Trees through interactive examinations, visualizations, and operations. Learn about tree rotations, balance factors, and more.">
-    <meta name="keywords" content="AVL Tree, Balanced Binary Search Tree, Data Structure, Exam, JavaScript, Visualization, Tree Rotation">
-    <meta name="author" content="VileEnd">
+    <meta name="keywords" content="AVL Tree, Balanced Binary Search Tree, Data Structure, JavaScript, Visualization, Tree Rotation">
+    <meta name="author" content="edujbarrios">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="robots" content="index, follow">
     <meta name="googlebot" content="index, follow">
@@ -52,13 +52,15 @@
             <p>Tree Depth: <span id="tree-depth">0</span></p>
             <p>Tree Complexity (number of nodes): <span id="tree-complexity">0</span></p>
         </div>
+        <div>
+            <h3 class="font-bold text-xl mb-4">Operations Log</h3>
+            <div id="log-container" class="overflow-y-auto h-40 bg-gray-100 p-2 rounded border border-gray-300"></div>
+        </div>
     </div>
 </div>
 <div class="fixed bottom-4 left-4 flex items-center space-x-2">
-    <a href="https://github.com/VileEnd/avlTreeExam" target="_blank">
     </a>
     <span>Made by <a href="https://github.com/edujbarrios" target="_blank" class="text-blue-500 font-bold">edujbarrios.</a></span>
-    <span>Based on Vileend's intial work</span>
 </div>
 <div class="fixed bottom-4 right-4">
     <button onclick="resetTree()" class="px-4 py-2 font-bold text-white bg-red-500 rounded">Reset</button>

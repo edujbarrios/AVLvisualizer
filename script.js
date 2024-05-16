@@ -20,11 +20,13 @@ class UIUpdater {
     incrementLeftRotations() {
         this.leftRotations++;
         this.updateRotationCount();
+        this.logOperation("Left Rotation performed");
     }
 
     incrementRightRotations() {
         this.rightRotations++;
         this.updateRotationCount();
+        this.logOperation("Right Rotation performed");
     }
     decrementLeftRightRotation(){
         this.leftRotations --;
@@ -35,12 +37,14 @@ class UIUpdater {
         this.leftRightRotations++;
         this.decrementLeftRightRotation();
         this.updateRotationCount();
+        this.logOperation("Left-Right Rotation performed");
     }
 
     incrementRightLeftRotations() {
         this.rightLeftRotations++;
         this.decrementLeftRightRotation()
         this.updateRotationCount();
+        this.logOperation("Right-Left Rotation performed");
     }
 
     updateRotationCount() {
@@ -50,12 +54,19 @@ class UIUpdater {
         document.getElementById('right-left-rotations').textContent = this.rightLeftRotations;
     }
 
+    logOperation(message) {
+        const logContainer = document.getElementById('log-container');
+        const newLog = document.createElement('p');
+        newLog.textContent = message;
+        logContainer.appendChild(newLog);
+        logContainer.scrollTop = logContainer.scrollHeight;
+    }
 }
 
 class AVLTree {
     constructor(uiUpdater) {
         this.root = null;
-        this.uiUpdater = uiUpdater
+        this.uiUpdater = uiUpdater;
     }
 
     height(node) {
@@ -69,7 +80,7 @@ class AVLTree {
         y.left = T;
         y.height = Math.max(this.height(y.left), this.height(y.right)) + 1;
         x.height = Math.max(this.height(x.left), this.height(x.right)) + 1;
-        this.uiUpdater.incrementRightRotations()
+        this.uiUpdater.incrementRightRotations();
         return x;
     }
 
@@ -80,23 +91,25 @@ class AVLTree {
         x.right = T;
         x.height = Math.max(this.height(x.left), this.height(x.right)) + 1;
         y.height = Math.max(this.height(y.left), this.height(y.right)) + 1;
-        this.uiUpdater.incrementLeftRotations()
+        this.uiUpdater.incrementLeftRotations();
         return y;
     }
 
     getBalance(node) {
         return node ? this.height(node.left) - this.height(node.right) : 0;
     }
-    updateNodeDepthAndBalance(node){
-        if (node){
-            node.depth = Math.max(this.getNodeDepth(node.left), this.getNodeDepth(node.right))+1
-            node.balance = this.getBalance(node)
+
+    updateNodeDepthAndBalance(node) {
+        if (node) {
+            node.depth = Math.max(this.getNodeDepth(node.left), this.getNodeDepth(node.right)) + 1;
+            node.balance = this.getBalance(node);
             this.updateNodeDepthAndBalance(node.left);
-            this.updateNodeDepthAndBalance(node.right)
+            this.updateNodeDepthAndBalance(node.right);
         }
     }
-    getNodeDepth(node){
-        return node ? node.depth : -1
+
+    getNodeDepth(node) {
+        return node ? node.depth : -1;
     }
 
     insert(node, key) {
@@ -113,30 +126,38 @@ class AVLTree {
         const balance = this.getBalance(node);
 
         if (balance > 1 && key < node.left.key) {
+            this.uiUpdater.logOperation(`Insert ${key}: Right Rotation at node ${node.key}`);
             return this.rightRotate(node);
         }
 
         if (balance < -1 && key > node.right.key) {
+            this.uiUpdater.logOperation(`Insert ${key}: Left Rotation at node ${node.key}`);
             return this.leftRotate(node);
         }
 
         if (balance > 1 && key > node.left.key) {
             node.left = this.leftRotate(node.left);
-            this.uiUpdater.incrementLeftRightRotations()
+            this.uiUpdater.incrementLeftRightRotations();
+            this.uiUpdater.logOperation(`Insert ${key}: Left-Right Rotation at node ${node.key}`);
             return this.rightRotate(node);
         }
 
         if (balance < -1 && key < node.right.key) {
             node.right = this.rightRotate(node.right);
-            this.uiUpdater.incrementRightLeftRotations()
+            this.uiUpdater.incrementRightLeftRotations();
+            this.uiUpdater.logOperation(`Insert ${key}: Right-Left Rotation at node ${node.key}`);
             return this.leftRotate(node);
         }
-        this.updateNodeDepthAndBalance(node)
+
+        this.updateNodeDepthAndBalance(node);
         return node;
     }
 
     addNode(key) {
         this.root = this.insert(this.root, key);
+        this.uiUpdater.logOperation(`Node ${key} added`);
+        renderTree();
+        printTraversals();
     }
 
     deleteNode(root, key) {
@@ -169,22 +190,26 @@ class AVLTree {
         const balance = this.getBalance(root);
 
         if (balance > 1 && this.getBalance(root.left) >= 0) {
+            this.uiUpdater.logOperation(`Delete ${key}: Right Rotation at node ${root.key}`);
             return this.rightRotate(root);
         }
 
         if (balance > 1 && this.getBalance(root.left) < 0) {
             root.left = this.leftRotate(root.left);
             this.uiUpdater.incrementLeftRightRotations();
+            this.uiUpdater.logOperation(`Delete ${key}: Left-Right Rotation at node ${root.key}`);
             return this.rightRotate(root);
         }
 
         if (balance < -1 && this.getBalance(root.right) <= 0) {
+            this.uiUpdater.logOperation(`Delete ${key}: Left Rotation at node ${root.key}`);
             return this.leftRotate(root);
         }
 
         if (balance < -1 && this.getBalance(root.right) > 0) {
             root.right = this.rightRotate(root.right);
             this.uiUpdater.incrementRightLeftRotations();
+            this.uiUpdater.logOperation(`Delete ${key}: Right-Left Rotation at node ${root.key}`);
             return this.leftRotate(root);
         }
 
@@ -199,6 +224,9 @@ class AVLTree {
 
     removeNode(key) {
         this.root = this.deleteNode(this.root, key);
+        this.uiUpdater.logOperation(`Node ${key} removed`);
+        renderTree();
+        printTraversals();
     }
 
     printPreOrder(node = this.root, logger = console.log) {
@@ -250,8 +278,6 @@ let uiUpdater = new UIUpdater();
 let tree = new AVLTree(uiUpdater);
 let allNumbers = [];
 
-
-
 function addValues() {
     const valueInput = document.getElementById('valueInput');
     const values = valueInput.value.split(/[\s,]+/).map(v => parseInt(v, 10)).filter(v => !isNaN(v));
@@ -302,7 +328,6 @@ function collapse(d) {
     }
 }
 
-
 function renderTree() {
     if (!tree.root) {
         return;
@@ -321,9 +346,6 @@ function renderTree() {
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-
-
 
     const treemap = d3.tree().size([height, width]);
 
@@ -512,6 +534,7 @@ function resetTree() {
     uiUpdater.updateRotationCount();
     document.getElementById('resultBox').value = '';
     document.getElementById('valueInput').value = '';
+    document.getElementById('log-container').innerHTML = '';
 
     d3.select("#tree-container").select("svg").remove();
 
