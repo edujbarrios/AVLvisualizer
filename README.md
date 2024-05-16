@@ -5,6 +5,8 @@ This project departs from the initial work of Vileend, a programmer that created
 
 In this new version, I've also implemented deletions, which is able to detect and note the rotations that may occur while deleting a node.
 
+`New`: Added a console log that tracks all movements and displays them on a console.
+
 Done with `HTML`, `CSS` and `Javascript`.
 
 ## TO-DO
